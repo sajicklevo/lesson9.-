@@ -6,20 +6,6 @@ print('Имя операционной системы:', os_name)
 path = os.getcwd()
 print('Путь до папки:', path)
 
-def sort_files_by_extension(source_folder):
-    for file_name in os.listdir(source_folder):
-        if os.path.isfile(os.path.join(source_folder, file_name)):
-            file_extension = file_name.split('.')[-1]
-            folder_name = file_extension.upper()
-            if not os.path.exists(os.path.join(source_folder, folder_name)):
-                os.makedirs(os.path.join(source_folder, folder_name))
-            new_file_path = os.path.join(source_folder, folder_name, file_name)
-            os.rename(os.path.join(source_folder, file_name), new_file_path)
-            print(f'Файл {file_name} был перемещен в папку {folder_name}')
-
-source_folder = os.getcwd()
-sort_files_by_extension(source_folder)
-
 extensions = set()
 while True:
     extension = input('Введите расширение файла (или "exit" для завершения): ')
