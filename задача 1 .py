@@ -1,37 +1,58 @@
 import os
-import random
-import string
 
-osname = os.name
-print('Имя вашей операционной системы:', osname)
+os_name = os.name
+print('Имя операционной системы:', os_name)
 
 path = os.getcwd()
 print('Путь до папки:', path)
 
+def sort_files_by_extension(source_folder):
+    for file_name in os.listdir(source_folder):
+        if os.path.isfile(os.path.join(source_folder, file_name)):
+            file_extension = file_name.split('.')[-1]
+            folder_name = file_extension.upper()
+            if not os.path.exists(os.path.join(source_folder, folder_name)):
+                os.makedirs(os.path.join(source_folder, folder_name))
+            new_file_path = os.path.join(source_folder, folder_name, file_name)
+            os.rename(os.path.join(source_folder, file_name), new_file_path)
+            print(f'Файл {file_name} был перемещен в папку {folder_name}')
+
+source_folder = os.getcwd()
+sort_files_by_extension(source_folder)
+
 extensions = set()
 while True:
-    extension = input('Введите расширение файла (или введите "exit" для завершения): ')
+    extension = input('Введите расширение файла (или "exit" для завершения): ')
     if extension == 'exit':
         break
-    extensions.add(extension)
-print('Расширения файлов:', extensions)
+    else:
+        extensions.add(extension)
+        print('Расширения файлов:', extensions)
+        for file_name in os.listdir(path):
+            if os.path.isfile(os.path.join(path, file_name)):
+                file_extension = file_name.split('.')[-1]
+                if file_extension in extensions:
+                    folder_name = file_extension.upper()
+                    if not os.path.exists(os.path.join(path, folder_name)):
+                        os.makedirs(os.path.join(path, folder_name))
+                    new_file_path = os.path.join(path, folder_name, file_name)
+                    os.rename(os.path.join(path, file_name), new_file_path)
+                    print(f'Файл {file_name} был перемещен в папку {folder_name}')
 
-for file_name in os.listdir(path):
-    if os.path.isfile(os.path.join(path, file_name)):
-        file_extension = file_name.split('.')[-1]
-        if file_extension in extensions:
-            folder_name = file_extension.upper()
-            if not os.path.exists(os.path.join(path, folder_name)):
-                os.makedirs(os.path.join(path, folder_name))
-            new_file_path = os.path.join(path, folder_name, file_name)
-            os.rename(os.path.join(path, file_name), new_file_path)
-print('Файлы были перемещены в папки с соответствующими расширениями')
+    for folder_name in os.listdir(path):
+        folder_path = os.path.join(path, folder_name)
+        if os.path.isdir(folder_path):
+            num_files = sum(not os.path.isdir(os.path.join(folder_path, j)) for j in os.listdir(folder_path))
+            total_size = sum(os.path.getsize(os.path.join(folder_path, j)) for j in os.listdir(folder_path)) / (1024 * 1024 * 1024)
+            print(f'В папке {folder_name} перемещено {num_files} файлов, их суммарный размер {total_size:.2f} гигабайта')
 
-for ext in os.listdir(path):
-    if os.path.isdir(os.path.join(path, ext)):
-        files_moved = len(os.listdir(os.path.join(path, ext)))
-        total_size = sum(os.path.getsize(os.path.join(path, ext, file)) for file in os.listdir(os.path.join(path, ext)))
-        print(f'В папке с файлами {ext} перемещено {files_moved} файлов, их суммарный размер - {total_size} байт')
+            for file_name in os.listdir(folder_path):
+                file_path = os.path.join(folder_path, file_name)
+                if os.path.isfile(file_path):
+                    new_file_name = 'new_' + file_name
+                    new_file_path = os.path.join(folder_path, new_file_name)
+                    os.rename(file_path, new_file_path)
+                    print(f'Файл {file_name} был переименован в {new_file_name}')
 
 def random_string(length):
     letters = string.ascii_letters
