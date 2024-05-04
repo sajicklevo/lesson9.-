@@ -155,5 +155,45 @@ def calculate_average_height(employees):
 
     return total_height / num_employees
 
-if __name__ == "__main__":
-    main_menu()
+
+def action_menu():
+    print('Выберите действие')
+
+
+def action_menu2():
+    print('Выберите действие')
+
+
+def action_menu3():
+    print('Выберите действие')
+
+
+def exit_menu():
+    print('Программа завершена')
+    exit()
+
+
+while True:
+    print("\nВыберите действие:")
+    print('1. Выберите действие')
+    print('2. Выберите действие')
+    print('3. Выберите действие')
+    print('4. Выход')
+
+    choice = int(input('Номер действия: '))
+
+    if choice == 1:
+        action_menu()
+
+    elif choice == 2:
+        action_menu2()
+
+    elif choice == 3:
+        action_menu3()
+
+    elif choice == 4:
+        exit_menu()
+
+    else:
+        print('Некорректное действие')
+
