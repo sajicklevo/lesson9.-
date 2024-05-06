@@ -1,199 +1,141 @@
 import json
 import csv
 
-def read_json(json_file_path):
-    with open(json_file_path,'r',encoding='UTF-8') as file:
+
+def json_to_csv(json_file, csv_file):
+    with open(json_file, 'r', encoding='UTF-8') as file:
+        data = json.load(file)
+    with open(csv_file, 'w', newline='', encoding='UTF-8') as w_file:
+        names = ['name', 'birthday', 'height', 'weight', 'car', 'languages']
+        file_writer = csv.DictWriter(w_file, delimiter=',', lineterminator='\n', fieldnames=names)
+        file_writer.writeheader()
+        for i in data:
+            file_writer.writerow(i)
+
+
+def read_json(json_file):
+    with open(json_file, 'r', encoding='UTF-8') as file:
+        data = json.load(file)
+        for i in data:
+            print(i)
+
+
+def read_csv(csv_file):
+    with open(csv_file, 'r', encoding='UTF-8') as file:
+        reader = csv.reader(file)
+        for i in reader:
+            print(i)
+
+
+def add_to_json(json_file):
+    name = str(input('Введите имя сотрудника: '))
+    birthday = int(input('Введите дату рождения сотрудника: '))
+    height = int(input('Введите рост сотрудника: '))
+    weight = int(input('Введите вес сотрудника: '))
+    car = str(input('Введите true или false: '))
+    languages = str(input('Введите язык программирования: ')).split(',')
+
+    add_employee = {
+        'name': name,
+        'birthday': birthday,
+        'height': height,
+        'weight': weight,
+        'car': car,
+        'languages': languages
+    }
+    with open(json_file, 'r+', encoding='UTF-8') as file:
+        data = json.load(file)
+        data.append(add_employee)
+        file.seek(0)
+        json.dump(data, file, indent=4)
+
+
+def add_to_csv(csv_file):
+    name = str(input('Введите имя сотрудника: '))
+    birthday = int(input('Введите дату рождения сотрудника: '))
+    height = int(input('Введите рост сотрудника: '))
+    weight = int(input('Введите вес сотрудника: '))
+    car = str(input('Введите true или false: '))
+    languages = str(input('Введите язык программирования: ')).split(',')
+
+    add_employee = {'name': name, 'birthday': birthday, 'weight': weight, 'car': car, 'languages': languages}
+
+    with open(csv_file, 'a', encoding="UTF-8", newline='') as w_file:
+        names = ['name', 'birthday', 'weight', 'car', 'languages']
+        file_writer = csv.DictWriter(w_file, delimiter=',', lineterminator='\n', fieldnames=names)
+
+        if w_file.tell() == 0:
+            file_writer.writeheader()
+
+        file_writer.writerow(add_employee)
+
+
+def read_info(json_file):
+    name=str(input())
+    with open(json_file,'r',encoding='UTF-8')as file:
         data=json.load(file)
-        for row in data:
-            print(row)
-json_file_path = '/home/danila/Загрузки/employees.json'
-with open(json_file_path, 'r') as json_file:
-    data = json.load(json_file)
+    for person in data:
+        if person['name'] == name:
+            return person
 
+def filter_by_languages(json_file):
+    languages=str(input())
+    lang=[]
+    with open(json_file,'r',encoding='UTF-8')as file:
+        data=json.load(file)
+    for person in data:
+        if languages['languages']:
+            lang.append(person)
+    return lang
 
-def write_csv(data, json_file_path):
-    with open(json_file_path, 'r') as json_file:
-        data = json.load(json_file)
-    with open('/home/danila/Загрузки/employees.csv', 'w', newline='') as csv_file:
-        csv_writer = csv.writer(csv_file)
-        header = list(data[0].keys())
-        csv_writer.writerow(header)
-        for row in data:
-            csv_writer.writerow(row.values())
-
-
-
-def add_new_employee(file_path):
-    with open(file_path, 'r') as json_file:
-        data = json.load(json_file)
-    new_employee = {}
-    new_employee['name'] = input('Введите имя сотрудника: ')
-    new_employee['hb'] = input('Введите дату рождения сотрудника: ')
-    new_employee['position'] = input('Введите язык программирования сотрудника: ')
-    data.append(new_employee)
-    with open(file_path, 'w') as json_file:
-        json.dump(data, json_file, indent=2)
-
-
-def add_new_employee_to_csv(csv_file_path):
-    new_employee = {}
-    new_employee['name'] = input('Введите имя сотрудника: ')
-    new_employee['dob'] = input('Введите дату рождения сотрудника: ')
-    new_employee['position'] = input('Введите язык программирования сотрудника: ')
-    fieldnames = ['name', 'dob', 'position']
-    with open(csv_file_path, 'a', newline='') as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-        if csv_file.tell() == 0:
-            writer.writeheader()
-        writer.writerow(new_employee)
-
-
-def search_employee_by_name(csv_file_path, search_name):
-    with open(csv_file_path, mode='r') as csv_file:
-        reader = csv.DictReader(csv_file)
-        found = False
-        for row in reader:
-            if row['name'] == search_name:
-                found = True
-                print(f"Информация о сотруднике по имени '{search_name}':")
-                print(f"Имя: {row['name']}")
-                print(f"Дата рождения: {row['dob']}")
-                print(f"Должность: {row['position']}")
-        if not found:
-            print(f"Сотрудник с именем '{search_name}' не найден.")
-
-
-def filter_employees_by_language(csv_file_path, programming_language):
-    with open(csv_file_path, mode='r') as csv_file:
-        reader = csv.DictReader(csv_file)
-        filtered_employees = []
-        for row in reader:
-            if programming_language.lower() in row['languages'].lower():
-                filtered_employees.append(row)
-
-        if filtered_employees:
-            print(f"Список сотрудников владеющих языком программирования '{programming_language}':")
-            for employee in filtered_employees:
-                print(f"Имя: {employee['name']}, Должность: {employee['position']}")
-        else:
-            print(f"Нет сотрудников, владеющих языком программирования '{programming_language}'.")
-
-
-def filter_employees_by_birth_year(csv_file_path, target_birth_year):
-    with open(csv_file_path, mode='r') as csv_file:
-        reader = csv.DictReader(csv_file)
-        total_height = 0
-        num_employees = 0
-        for row in reader:
-            if int(row['birth_year']) < target_birth_year:
-                total_height += float(row['height'])
-                num_employees += 1
-
-        if num_employees > 0:
-            average_height = total_height / num_employees
-            print(
-                f"Средний рост всех сотрудников, у которых год рождения меньше {target_birth_year}: {average_height:.2f} см")
-        else:
-            print(f"Нет данных о сотрудниках с годом рождения меньше {target_birth_year}.")
-
-
-def main_menu():
-    csv_file_path = '/home/danila/Загрузки/employees.csv'
-    while True:
-        print("\nВыберите действие:")
-        print("1. Фильтрация сотрудников по языку программирования")
-        print("2. Фильтрация среднего роста по году рождения")
-        print("3. Выход из программы")
-        choice = input("Введите номер действия: ")
-
-        if choice == '1':
-            programming_language = input("Введите язык программирования для фильтрации: ")
-            filter_employees(csv_file_path, 'languages', programming_language)
-
-        elif choice == '2':
-            target_birth_year = int(input("Введите год рождения для фильтрации: "))
-            filter_employees(csv_file_path, 'birth_year', target_birth_year)
-
-        elif choice == '3':
-            print("Программа завершена.")
-            break
-
-        else:
-            print("Некорректный выбор. Попробуйте еще раз.")
-
-
-def filter_employees(csv_file_path, field_name, search_value):
-    with open(csv_file_path, mode='r') as csv_file:
-        reader = csv.DictReader(csv_file)
-        filtered_employees = []
-        for row in reader:
-            if field_name in row and row[field_name] == str(search_value):
-                filtered_employees.append(row)
-
-        if filtered_employees:
-            if field_name == 'languages':
-                print(f"Список сотрудников владеющих языком программирования '{search_value}':")
-            elif field_name == 'birth_year':
-                print(
-                    f"Средний рост всех сотрудников, у которых год рождения меньше {search_value}: {calculate_average_height(filtered_employees):.2f} см")
-
-            for employee in filtered_employees:
-                print(f"Имя: {employee['name']}, Должность: {employee['position']}")
-
-        else:
-            if field_name == 'languages':
-                print(f"Нет сотрудников, владеющих языком программирования '{search_value}'.")
-            elif field_name == 'birth_year':
-                print(f"Нет данных о сотрудниках с годом рождения меньше {search_value}.")
-
-
-def calculate_average_height(employees):
-    total_height = 0
-    num_employees = len(employees)
-    for employee in employees:
-        total_height += float(employee['height'])
-
-    return total_height / num_employees
-
-
-def action_menu():
-    print('Выберите действие')
-
-
-def action_menu2():
-    print('Выберите действие')
-
-
-def action_menu3():
-    print('Выберите действие')
-
-
-def exit_menu():
-    print('Программа завершена')
-    exit()
+def filter_by_year(json_file):
+    year =str(input())
+    total_height=0
+    a=0
+    with open(json_file,'r',encoding='UTF-8') as file:
+        data=json.load(file)
+    for person in data:
+        if int(person['birthday'].split('.')[-1]<int(year)):
+            total_height+=person['height']
+            a+=1
+    return total_height/a
 
 
 while True:
-    print("\nВыберите действие:")
-    print('1. Выберите действие')
-    print('2. Выберите действие')
-    print('3. Выберите действие')
-    print('4. Выход')
+    print('\nМеню:')
+    print('1. Прочитать данные и преобразовать в JSON')
+    print('2. Сохранить данные в CSV')
+    print('3. Добавить нового сотрудника в JSON')
+    print('4. Добавить нового сотрудника в CSV')
+    print('5. Прочитать информацию о сотруднике по имени')
+    print('6. Фильтрация по году рождения')
+    print('7. Фильтрация по языку программирования')
+    print('8. Выход')
 
-    choice = int(input('Номер действия: '))
+    choice = input('Выберите действие: ')
 
-    if choice == 1:
-        action_menu()
+    if choice == "1":
+        read_json('json_file.json')
 
-    elif choice == 2:
-        action_menu2()
+    elif choice == "2":
+        read_csv('csv_file.csv')
 
-    elif choice == 3:
-        action_menu3()
+    elif choice == "3":
+        add_to_json('json_file.json')
 
-    elif choice == 4:
-        exit_menu()
+    elif choice == "4":
+        add_to_csv('csv_file.csv')
+
+    elif choice == "5":
+        print(read_info('json_file.json'))
+
+    elif choice == "6":
+        print(filter_by_year('json_file.json'))
+
+    elif choice == "7":
+        print(filter_by_languages('json_file.json'))
 
     else:
-        print('Некорректное действие')
+        break
+
 
